@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+*.log
+data/*
+!data/.gitkeep
+downloads/*
+!downloads/.gitkeep
+tests/test_downloads/
+.pytest_cache/
+.DS_Store

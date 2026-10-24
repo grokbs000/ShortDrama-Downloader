@@ -1,0 +1,2975 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShortDrama Pro - 短劇探索與下載管理中心</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+:root {
+  --bg-dark: #090b10;
+  --bg-sidebar: rgba(13, 17, 23, 0.95);
+  --bg-card: rgba(20, 26, 36, 0.7);
+  --bg-card-hover: rgba(28, 36, 50, 0.85);
+  --bg-input: rgba(10, 14, 20, 0.8);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-focus: rgba(99, 102, 241, 0.6);
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-glow: rgba(99, 102, 241, 0.25);
+  --tiktok-red: #fe2c55;
+  --tiktok-cyan: #25f4ee;
+  --accent: #ec4899;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --sidebar-w: 260px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-dark);
+  background-image:
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 45%),
+    radial-gradient(at 100% 0%, rgba(254, 44, 85, 0.08) 0px, transparent 45%),
+    radial-gradient(at 50% 100%, rgba(37, 244, 238, 0.05) 0px, transparent 50%);
+  color: var(--text-main);
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar Style */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
+
+/* App Layout */
+.app-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar */
+aside.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 40;
+}
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--tiktok-red) 0%, var(--primary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(254, 44, 85, 0.3);
+  font-size: 1.1rem;
+}
+.brand-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.brand-sub {
+  font-size: 0.7rem;
+  color: var(--tiktok-cyan);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Nav Menu */
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid transparent;
+  user-select: none;
+}
+.nav-item:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.04);
+}
+.nav-item.active {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.08) 100%);
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.15);
+}
+.nav-icon {
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+}
+.nav-badge {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+}
+.nav-badge.active-badge {
+  background: var(--tiktok-red);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(254, 44, 85, 0.4);
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 16px 18px;
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(10, 13, 18, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sys-status-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6b7280;
+}
+.dot.online { background: var(--success); box-shadow: 0 0 8px var(--success); }
+.dot.offline { background: var(--danger); }
+
+/* Main Content Area */
+main.main-viewport {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Page Containers */
+.page-view {
+  display: none;
+  padding: 32px 40px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  flex-direction: column;
+  gap: 24px;
+}
+.page-view.active {
+  display: flex;
+  animation: fadeIn 0.25s ease forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Page Headers */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 18px;
+}
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.page-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Buttons & Inputs */
+input, select, textarea {
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--text-main);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+button {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+button:active { transform: scale(0.98); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px var(--primary-glow);
+}
+.btn-primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+.btn-tiktok {
+  background: linear-gradient(135deg, var(--tiktok-red) 0%, #db2777 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(254, 44, 85, 0.3);
+}
+.btn-tiktok:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(254, 44, 85, 0.45);
+}
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+.btn-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.btn-success:hover {
+  background: rgba(16, 185, 129, 0.25);
+}
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  border-radius: 8px;
+}
+
+.filter-tab {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+.filter-tab:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.filter-tab.active {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+  color: #fff;
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 2px 10px var(--primary-glow);
+}
+
+/* Glass Cards */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+/* ==============================================================
+   PAGE 1: CATALOG (挑選頁面 - 無限滾動)
+   ============================================================== */
+.catalog-toolbar {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: var(--bg-card);
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+.search-box {
+  flex: 1;
+  position: relative;
+}
+.search-box input {
+  width: 100%;
+  padding-left: 40px;
+}
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* URL Quick Sniffer Bar */
+.quick-url-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Catalog Grid */
+.drama-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 22px;
+}
+.drama-card {
+  background: rgba(15, 20, 28, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.drama-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.2);
+}
+.drama-thumb-wrap {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  position: relative;
+  overflow: hidden;
+  background: #151b24;
+}
+.drama-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.drama-card:hover .drama-thumb {
+  transform: scale(1.05);
+}
+.drama-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--tiktok-cyan);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.drama-ep-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.drama-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+.drama-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text-main);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.drama-card-meta {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Infinite Scroll Sentinel & Loader */
+.infinite-scroll-status {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Episode Drawer / Modal */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.drawer-backdrop.active { display: flex; }
+.drawer-content {
+  width: 100%;
+  max-width: 900px;
+  max-height: 88vh;
+  background: #11151e;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+  animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.drawer-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(20, 26, 36, 0.6);
+}
+.drawer-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.ep-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 10px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.ep-btn {
+  padding: 10px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+.ep-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.ep-btn.selected {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+.ep-btn.now-playing {
+  background: linear-gradient(135deg, #ec4899, #f97316);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 0 16px rgba(236, 72, 153, 0.45);
+  animation: nowPlayPulse 2s ease-in-out infinite;
+}
+@keyframes nowPlayPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(236, 72, 153, 0.35); }
+  50% { box-shadow: 0 0 22px rgba(236, 72, 153, 0.6); }
+}
+
+/* Mode Toggle Switch */
+.mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+.mode-btn {
+  padding: 7px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  user-select: none;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+}
+.mode-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.06);
+}
+.mode-btn.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 10px var(--primary-glow);
+}
+.mode-btn.active.play-mode {
+  background: linear-gradient(135deg, #ec4899, #f97316);
+  box-shadow: 0 2px 12px rgba(236, 72, 153, 0.35);
+}
+
+/* Inline Player Container */
+.inline-player-wrap {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+.inline-player-wrap.visible { display: flex; }
+.inline-player-wrap video {
+  width: 100%;
+  max-height: 400px;
+  outline: none;
+  background: #000;
+}
+.player-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: rgba(10, 10, 15, 0.9);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.player-ep-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.player-ep-nav button {
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 7px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-sans);
+}
+.player-ep-nav button:hover {
+  background: rgba(255,255,255,0.12);
+}
+.player-ep-nav button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.player-now-title {
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.player-now-title .live-dot {
+  width: 7px; height: 7px;
+  background: #ef4444;
+  border-radius: 50%;
+  display: inline-block;
+  animation: nowPlayPulse 1.5s ease-in-out infinite;
+}
+
+/* ==============================================================
+   PAGE 2: DOWNLOADS (下載隊列 - 清除/繼續重試)
+   ============================================================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.stat-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stat-num {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.stat-lbl {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(13, 17, 23, 0.5);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+th {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 14px 16px;
+  color: var(--text-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+.badge-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.badge-queued { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+.badge-running { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); animation: pulse 1.8s infinite; }
+.badge-completed { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-failed { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+.badge-cancelled { background: rgba(107, 114, 128, 0.15); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.3); }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--tiktok-cyan) 100%);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* ==============================================================
+   PAGE 3: SETTINGS (設定頁面 - 路徑持久化/網站預先登錄資料)
+   ============================================================== */
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.setting-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.setting-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.setting-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.setting-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.auth-platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 900px) {
+  .auth-platforms-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.auth-box {
+  background: rgba(10, 14, 20, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.auth-box-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.auth-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.auth-badge.ok { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.auth-badge.empty { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(17, 24, 39, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 200;
+  font-size: 0.9rem;
+  font-weight: 600;
+  animation: toastIn 0.25s ease;
+}
+@keyframes toastIn {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Sidebar Section Headers */
+.sidebar-section-title {
+  padding: 10px 14px 4px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* Drama Card Multi-Select Checkbox & Downloaded Badge */
+.drama-select-check {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 25;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.drama-select-check:hover {
+  border-color: var(--primary);
+  transform: scale(1.1);
+  background: rgba(15, 23, 42, 0.98);
+}
+.drama-select-check input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+.drama-card.selected-card {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--primary), 0 10px 25px rgba(99, 102, 241, 0.35) !important;
+  transform: translateY(-4px) !important;
+}
+.drama-card.is-downloaded {
+  position: relative;
+}
+.drama-card.hidden-by-filter {
+  display: none !important;
+}
+.badge-downloaded {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(16, 185, 129, 0.95);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Floating Bottom Batch Action Bar */
+.floating-batch-bar {
+  position: fixed;
+  bottom: 24px;
+  left: calc(var(--sidebar-w) + 24px);
+  right: 24px;
+  background: rgba(17, 24, 39, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(99, 102, 241, 0.5);
+  border-radius: 18px;
+  padding: 14px 24px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  z-index: 120;
+  animation: batchBarSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.floating-batch-bar.visible {
+  display: flex !important;
+}
+@keyframes batchBarSlideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.batch-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  overflow: hidden;
+}
+.batch-badge {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 3px 11px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+.batch-titles-preview {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.batch-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Episode Drawer Downloaded State */
+.ep-btn.is-downloaded {
+  border-color: rgba(16, 185, 129, 0.6) !important;
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #34d399 !important;
+}
+.ep-btn.is-downloaded::after {
+  content: ' ✓';
+  font-weight: bold;
+}
+
+.mono { font-family: var(--font-mono); }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-logo">🎬</div>
+      <div>
+        <div class="brand-title">ShortDrama Pro</div>
+        <div class="brand-sub">TikTok · FlexTV · DramaBox · NetShort</div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">短劇平台挑選</div>
+      <div class="nav-item active" id="nav-platform-tiktok" onclick="switchPlatform('tiktok')">
+        <span class="nav-icon">🎵</span>
+        <span>TikTok 短劇</span>
+        <span class="nav-badge" id="badge-tiktok-count">70+</span>
+      </div>
+      <div class="nav-item" id="nav-platform-flextv" onclick="switchPlatform('flextv')">
+        <span class="nav-icon">🎬</span>
+        <span>Flex TV 短劇</span>
+        <span class="nav-badge" id="badge-flextv-count" style="color:#f472b6;">74+</span>
+      </div>
+      <div class="nav-item" id="nav-platform-dramabox" onclick="switchPlatform('dramabox')">
+        <span class="nav-icon">📦</span>
+        <span>DramaBox 短劇</span>
+        <span class="nav-badge" id="badge-dramabox-count" style="color:#fbbf24;">熱門</span>
+      </div>
+      <div class="nav-item" id="nav-platform-netshort" onclick="switchPlatform('netshort')">
+        <span class="nav-icon">⚡</span>
+        <span>NetShort 短劇</span>
+        <span class="nav-badge" id="badge-netshort-count" style="color:#38bdf8;">100+</span>
+      </div>
+
+      <div class="sidebar-section-title" style="margin-top:14px;">下載與管理</div>
+      <div class="nav-item" id="nav-downloads" onclick="switchTab('downloads')">
+        <span class="nav-icon">📥</span>
+        <span>下載管理</span>
+        <span class="nav-badge" id="sidebar-queue-badge">0</span>
+      </div>
+      <div class="nav-item" id="nav-settings" onclick="switchTab('settings')">
+        <span class="nav-icon">⚙️</span>
+        <span>系統設定</span>
+        <span class="nav-badge" id="sidebar-settings-badge">●</span>
+      </div>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <div class="sys-status-card">
+        <div class="status-indicator">
+          <div class="dot" id="health-dot"></div>
+          <span id="health-text" style="font-size:0.78rem;">連線中…</span>
+        </div>
+        <span class="mono" id="ffmpeg-status" style="font-size:0.75rem; color:var(--text-subtle);">FFmpeg</span>
+      </div>
+      <div style="font-size:0.72rem; color:var(--text-subtle); display:flex; justify-content:space-between;">
+        <span>v3.4.0 Engine</span>
+        <span class="mono">127.0.0.1:8765</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Viewport -->
+  <main class="main-viewport">
+
+    <!-- ==============================================================
+         VIEW 1: CATALOG (挑選頁面 - 無限滾動)
+         ============================================================== -->
+    <section class="page-view active" id="view-catalog">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title" id="catalog-view-title"><span>🔥</span> TikTok 熱門短劇挑選</h1>
+          <p class="page-desc" id="catalog-view-desc">直接挑選 TikTok 官方同步短劇，向下滾動連續加載；亦支援輸入 URL 解析單劇。</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-secondary btn-sm" id="refresh-catalog-btn" onclick="refreshCatalog()">
+            <span>🔄</span> 重新整理目錄
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick URL Sniffer -->
+      <div class="card" style="padding:16px 20px;">
+        <div style="font-size:0.85rem; font-weight:700; color:var(--text-muted); margin-bottom:10px; display:flex; justify-content:space-between;">
+          <span>⚡ 網址快速解析 (Flex TV / TikTok / NetShort 單劇或單集)</span>
+          <span style="font-size:0.75rem; color:var(--text-subtle);">支援 https://www.flextv.cc/... 、tiktok.com/... 或 netshort.com/...</span>
+        </div>
+        <div class="quick-url-bar">
+          <input id="quick-url-input" style="flex:1;" placeholder="貼上短劇首頁或單集網址，如 https://www.flextv.cc/tc/movie/... 或 https://www.tiktok.com/shortdrama/episode/...">
+          <button class="btn-primary" onclick="resolveQuickUrl()">解析劇集</button>
+        </div>
+      </div>
+
+      <!-- Catalog Toolbar & Search Filter -->
+      <div class="catalog-toolbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input id="catalog-search" placeholder="在已載入的短劇中搜尋片名或標籤…" oninput="filterCatalogCards()">
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <button class="btn-secondary btn-sm" id="btn-toggle-hide-downloaded" onclick="toggleHideDownloaded()" style="display:flex; align-items:center; gap:6px;">
+            <span id="icon-hide-downloaded">🚫</span> <span id="lbl-hide-downloaded">隱藏已下載</span>
+          </button>
+          <button class="btn-secondary btn-sm" id="btn-select-all-loaded" onclick="toggleSelectAllLoadedDramas()" style="display:flex; align-items:center; gap:6px;">
+            <span>☑️</span> <span id="lbl-select-all">勾選全部</span>
+          </button>
+          <div style="font-size:0.85rem; color:var(--text-muted); white-space:nowrap;">
+            已載入 <strong id="catalog-loaded-count" style="color:var(--text-main);">0</strong> 部短劇
+            <span id="catalog-downloaded-info" style="margin-left:6px; color:#34d399; font-size:0.8rem; display:none;">(含 <strong id="catalog-downloaded-count">0</strong> 部已下載)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Infinite Scroll Drama Grid -->
+      <div class="drama-grid" id="drama-catalog-grid"></div>
+
+      <!-- Sentinel & Infinite Scroll Loader -->
+      <div class="infinite-scroll-status" id="infinite-scroll-sentinel">
+        <div class="spinner" id="infinite-spinner"></div>
+        <span id="infinite-scroll-text">向下滾動加載更多短劇…</span>
+        <button class="btn-secondary btn-sm" id="btn-manual-load-more" onclick="loadMoreCatalog(false)" style="margin-top:6px; display:none;">
+          👇 載入更多短劇
+        </button>
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         VIEW 2: DOWNLOADS (下載隊列 - 清除/繼續重試)
+         ============================================================== -->
+    <section class="page-view" id="view-downloads">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title"><span>📥</span> 下載任務管理</h1>
+          <p class="page-desc">即時追蹤佇列進度。已下載記錄可一鍵清除 (保留硬碟檔案)，下載失敗或中斷之任務可一鍵繼續。</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-secondary btn-sm" onclick="clearCompletedTasks()">🧹 清除已完成記錄</button>
+          <a href="/api/export/tasks.csv" download><button class="btn-secondary btn-sm">匯出 CSV</button></a>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-num" id="stat-running" style="color:#818cf8;">0</div>
+          <div class="stat-lbl">進行中任務</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-queued" style="color:#fbbf24;">0</div>
+          <div class="stat-lbl">佇列等待中</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-completed" style="color:#34d399;">0</div>
+          <div class="stat-lbl">已下載成功</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-failed" style="color:#f87171;">0</div>
+          <div class="stat-lbl">下載失敗 / 中斷</div>
+        </div>
+      </div>
+
+      <!-- Single Direct Download Card -->
+      <div class="card" style="padding:18px 22px;">
+        <div class="card-title" style="margin-bottom:12px; font-size:0.95rem;">
+          <span>⚡ 手動新增單集下載 / 媒體探測</span>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <input id="direct-url" style="flex:2; min-width:240px;" placeholder="MP4/M3U8 直鏈 或 單集網頁 URL">
+          <input id="direct-title" value="ShortDrama" placeholder="劇名" style="flex:1; min-width:140px;">
+          <input id="direct-ep" type="number" value="1" min="1" style="width:80px;" placeholder="集數">
+          <select id="direct-quality" style="width:100px;">
+            <option value="best">Best</option>
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+          </select>
+          <button class="btn-primary" onclick="addDirect()">加入佇列</button>
+          <button class="btn-secondary" onclick="detectUrl()">嗅探探測</button>
+        </div>
+        <div id="detect-candidates" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- Live Tasks Table -->
+      <div class="card">
+        <div class="card-title" style="flex-wrap:wrap; gap:12px;">
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <span>隊列任務清單</span>
+            <div class="task-filter-tabs" style="display:flex; gap:6px;">
+              <button class="filter-tab active" data-filter="all" onclick="filterTaskStatus('all')">全部 (<span id="tab-cnt-all">0</span>)</button>
+              <button class="filter-tab" data-filter="running" onclick="filterTaskStatus('running')">進行中 (<span id="tab-cnt-running">0</span>)</button>
+              <button class="filter-tab" data-filter="queued" onclick="filterTaskStatus('queued')">排隊中 (<span id="tab-cnt-queued">0</span>)</button>
+              <button class="filter-tab" data-filter="completed" onclick="filterTaskStatus('completed')">已完成 (<span id="tab-cnt-completed">0</span>)</button>
+              <button class="filter-tab" data-filter="failed" onclick="filterTaskStatus('failed')">失敗/中斷 (<span id="tab-cnt-failed">0</span>)</button>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn-success btn-sm" onclick="retryAllFailedTasks()" title="一鍵重新執行所有失敗與中斷任務">🔄 重試所有失敗</button>
+            <button class="btn-danger btn-sm" onclick="cancelAllTasks()" title="取消所有正在進行與佇列中的任務">⏹️ 全部取消</button>
+            <button class="btn-secondary btn-sm" onclick="clearAllTasks()" style="color:#f87171;" title="清空所有任務紀錄">清空所有紀錄</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:55px;">ID</th>
+                <th>劇名</th>
+                <th style="width:70px;">集數</th>
+                <th style="width:75px;">品質</th>
+                <th style="width:110px;">狀態</th>
+                <th style="width:220px;">下載進度</th>
+                <th>輸出檔案 / 訊息</th>
+                <th style="width:120px; text-align:right;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="task-tbody">
+              <tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:28px;">載入佇列中…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         VIEW 3: SETTINGS (設定頁面 - 路徑持久化/網站預先登錄資料)
+         ============================================================== -->
+    <section class="page-view" id="view-settings">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title"><span>⚙️</span> 系統與登入設定</h1>
+          <p class="page-desc">自訂保留影片下載目錄，並保存 NetShort 與 TikTok 網站預先登入資訊以解鎖完整集數。</p>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <!-- 1. Download Path Settings -->
+        <div class="setting-card">
+          <div class="setting-card-header">
+            <div>
+              <div class="setting-title"><span>📁</span> 影片下載保留路徑 (Download Directory)</div>
+              <div class="setting-desc">設定並持久化儲存影片輸出位置，系統重啟後將自動保留設定。</div>
+            </div>
+            <span class="auth-badge ok" id="path-status-badge">有效路徑</span>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <input id="setting-download-dir" class="mono" style="flex:1;" placeholder="/Users/.../downloads">
+            <button class="btn-primary" onclick="saveDownloadPath()">儲存路徑</button>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-subtle);">
+            預設路徑儲存於 <span class="mono">data/settings.json</span>，下載時將自動以劇名建立專屬子資料夾。
+          </div>
+        </div>
+
+        <!-- 2. Crawler Dynamic Rate Limit Delay -->
+        <div class="setting-card">
+          <div class="setting-card-header">
+            <div>
+              <div class="setting-title"><span>⏳</span> 爬蟲動態延遲控制 (防限流/防封鎖)</div>
+              <div class="setting-desc">在請求短劇目錄、劇集解析與串流時隨機套用 Jitter 動態休眠，遭遇 429/403 自動指數退避。</div>
+            </div>
+            <span class="auth-badge ok" id="delay-status-badge">動態 Jitter 生效中</span>
+          </div>
+          <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.85rem; color:var(--text-muted);">最小延遲 (秒)：</span>
+              <input id="setting-delay-min" type="number" step="0.1" min="0.1" max="10" value="0.8" style="width:90px;" class="mono">
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.85rem; color:var(--text-muted);">最大延遲 (秒)：</span>
+              <input id="setting-delay-max" type="number" step="0.1" min="0.2" max="20" value="2.0" style="width:90px;" class="mono">
+            </div>
+            <button class="btn-primary" onclick="saveCrawlerDelay()">儲存延遲設定</button>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-subtle);">
+            建議設定在 0.8s ~ 2.5s 之間，能有效突破各大短劇平台的頻率限制並兼顧下載效能。
+          </div>
+        </div>
+
+        <!-- 2.5 Concurrent Download Threads -->
+        <div class="setting-card">
+          <div class="setting-card-header">
+            <div>
+              <div class="setting-title"><span>⚡</span> 下載佇列並發數 (Concurrent Download Threads)</div>
+              <div class="setting-desc">控制同時進行下載的最大線程數 (1 ~ 8)。調高可提升多集同時下載速度，頻寬或系統負擔重時可調低。</div>
+            </div>
+            <span class="auth-badge ok" id="concurrency-badge">線程生效中</span>
+          </div>
+          <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.85rem; color:var(--text-muted);">同時下載線程數：</span>
+              <input id="setting-concurrency" type="number" min="1" max="8" value="3" style="width:80px;" class="mono">
+            </div>
+            <button class="btn-primary" onclick="saveConcurrency()">儲存並發設定</button>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-subtle);">
+            預設推薦為 3。若電腦效能或網路頻寬充足，可調高至 5 快速批次下載全劇。
+          </div>
+        </div>
+
+        <!-- 3. Authentication / Site Pre-login Storage -->
+        <div class="setting-card">
+          <div class="setting-card-header">
+            <div>
+              <div class="setting-title"><span>🔐</span> 網站預先登錄資料保存 (Authentication State)</div>
+              <div class="setting-desc">保存平台的 Session/Cookie，爬蟲將帶入憑證，自動享有登入會員權限下載全劇。</div>
+            </div>
+          </div>
+
+          <div class="auth-platforms-grid">
+            <!-- NetShort Auth Box -->
+            <div class="auth-box">
+              <div class="auth-box-top">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-weight:700; font-size:1rem;">NetShort 平台</span>
+                </div>
+                <span class="auth-badge empty" id="netshort-auth-badge">檢查中…</span>
+              </div>
+              <div style="font-size:0.8rem; color:var(--text-muted);" id="netshort-auth-info">
+                尚未配置預先登錄資料。
+              </div>
+              <textarea id="netshort-auth-text" rows="3" class="mono" style="font-size:0.75rem;" placeholder="貼上 NetShort 的 StorageState JSON 或 Cookie 字串"></textarea>
+              <div style="display:flex; gap:8px;">
+                <button class="btn-primary btn-sm" onclick="saveAuth('netshort')">保存 NetShort 登錄</button>
+                <button class="btn-secondary btn-sm" onclick="clearAuth('netshort')">清除資料</button>
+              </div>
+            </div>
+
+            <!-- TikTok Auth Box -->
+            <div class="auth-box">
+              <div class="auth-box-top">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-weight:700; font-size:1rem;">TikTok ShortDrama 平台</span>
+                </div>
+                <span class="auth-badge empty" id="tiktok-auth-badge">檢查中…</span>
+              </div>
+              <div style="font-size:0.8rem; color:var(--text-muted);" id="tiktok-auth-info">
+                尚未配置預先登錄資料。
+              </div>
+              <textarea id="tiktok-auth-text" rows="3" class="mono" style="font-size:0.75rem;" placeholder="貼上 TikTok 的 Playwright StorageState JSON 或 Cookie 字串"></textarea>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn-primary btn-sm" id="btn-browser-login" onclick="launchTikTokBrowserLogin()">🚀 彈出視窗一鍵登入 / 通過驗證</button>
+                <button class="btn-tiktok btn-sm" onclick="saveAuth('tiktok')">保存貼上的憑證</button>
+                <button class="btn-secondary btn-sm" onclick="clearAuth('tiktok')">清除資料</button>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-subtle); line-height:1.6; margin-top:4px;">
+            💡 <strong>重要防呆</strong>：TikTok 短劇若未登入或遇到風控會彈出 Captcha 拼圖，並只在背景播放 193KB 的音符 Logo 動畫。<strong>請點擊上方「彈出視窗一鍵登入」或貼上已登入 StorageState JSON</strong>，系統將自動套用會員權限並解鎖真實正片串流！亦可於「下載管理」直接貼上 DevTools 複製的正片 URL。
+          </div>
+        </div>
+
+        <!-- 3. System Environment Info -->
+        <div class="setting-card">
+          <div class="setting-title"><span>💻</span> 引擎運行環境資訊</div>
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; font-size:0.85rem;">
+            <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:10px; border:1px solid var(--border);">
+              <div style="color:var(--text-muted); font-size:0.75rem;">FFMPEG 引擎</div>
+              <strong id="env-ffmpeg" style="color:#34d399;">檢測中…</strong>
+            </div>
+            <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:10px; border:1px solid var(--border);">
+              <div style="color:var(--text-muted); font-size:0.75rem;">資料庫路徑</div>
+              <span class="mono" style="font-size:0.78rem;">data/shortdrama.db</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:10px; border:1px solid var(--border);">
+              <div style="color:var(--text-muted); font-size:0.75rem;">並發工作線程</div>
+              <strong>2 Workers (ThreadPool)</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Floating Batch Action Bar (for multi-selected dramas) -->
+<div class="floating-batch-bar" id="floating-batch-bar">
+  <div class="batch-bar-left">
+    <span class="batch-badge" id="batch-selected-count">1</span>
+    <span style="font-weight:700;">部短劇已勾選</span>
+    <span class="batch-titles-preview" id="batch-titles-preview"></span>
+  </div>
+  <div class="batch-bar-right">
+    <label style="display:flex; align-items:center; gap:6px; font-size:0.82rem; color:var(--text-muted); cursor:pointer; user-select:none;">
+      <input type="checkbox" id="batch-skip-downloaded-cb" checked>
+      <span>自動略過已下載集數</span>
+    </label>
+    <select id="batch-quality" style="padding:6px 10px; font-size:0.82rem;">
+      <option value="best">最佳畫質</option>
+      <option value="1080p">1080p</option>
+      <option value="720p">720p</option>
+    </select>
+    <button class="btn-primary btn-sm" onclick="submitBatchDramasDownload(false)">
+      <span>📥</span> 一鍵加入佇列 (全集)
+    </button>
+    <button class="btn-secondary btn-sm" onclick="submitBatchDramasDownload(true)">
+      <span>⚡</span> 僅加入第 1 集試看
+    </button>
+    <button class="btn-secondary btn-sm" onclick="clearDramaSelection()" style="color:var(--text-muted);">
+      <span>✖</span> 清除勾選
+    </button>
+  </div>
+</div>
+
+<!-- Episode Selection Drawer / Modal -->
+<div class="drawer-backdrop" id="episode-drawer">
+  <div class="drawer-content" style="max-width:960px;">
+    <div class="drawer-header" style="flex-wrap:wrap; gap:10px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:1.3rem;">🎬</span>
+        <div>
+          <h2 id="drawer-title" style="font-size:1.15rem; font-weight:700;">短劇劇集挑選</h2>
+          <span id="drawer-subtitle" style="font-size:0.8rem; color:var(--text-muted);">共 0 集</span>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="mode-toggle" id="drawer-mode-toggle">
+          <button class="mode-btn active" id="mode-btn-download" onclick="setDrawerMode('download')">📥 下載模式</button>
+          <button class="mode-btn play-mode" id="mode-btn-play" onclick="setDrawerMode('play')">▶️ 播放模式</button>
+        </div>
+        <button class="btn-secondary btn-sm" onclick="closeDrawer()">✕ 關閉</button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <!-- Inline Player (visible in play mode) -->
+      <div class="inline-player-wrap" id="drawer-player-wrap">
+        <video id="drawer-inline-player" controls playsinline></video>
+        <div class="player-controls-bar">
+          <div class="player-now-title">
+            <span class="live-dot"></span>
+            <span id="drawer-player-ep-label">選擇集數開始播放</span>
+          </div>
+          <div class="player-ep-nav">
+            <button id="btn-prev-ep" onclick="playPrevEp()" disabled>⏮ 上一集</button>
+            <button id="btn-next-ep" onclick="playNextEp()" disabled>下一集 ⏭</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Toolbar (visible in download mode) -->
+      <div id="drawer-download-toolbar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn-secondary btn-sm" onclick="selectAllEpisodes(true)">全選</button>
+          <button class="btn-secondary btn-sm" onclick="selectAllEpisodes(false)">全不選</button>
+          <button class="btn-secondary btn-sm" onclick="selectUnlockedEpisodes()">僅未鎖定</button>
+          <button class="btn-secondary btn-sm" id="btn-select-undownloaded" onclick="selectUndownloadedEpisodes()" style="color:#34d399; border-color:rgba(52,211,153,0.3);">⚡ 僅選未下載</button>
+          <button class="btn-secondary btn-sm" onclick="selectFirstN(10)">前 10 集</button>
+          <button class="btn-secondary btn-sm" onclick="selectLastN(10)">後 10 集</button>
+          <button class="btn-secondary btn-sm" onclick="invertEpisodeSelection()">反向選擇</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:0.82rem; color:var(--text-muted); cursor:pointer; user-select:none;">
+            <input type="checkbox" id="drawer-skip-downloaded-cb" checked>
+            <span>自動略過已下載集數</span>
+          </label>
+          <span style="font-size:0.85rem; color:var(--text-muted);">下載畫質：</span>
+          <select id="drawer-quality" style="padding:6px 10px; font-size:0.82rem;">
+            <option value="best">最佳畫質 (Best)</option>
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+          </select>
+          <button class="btn-tiktok" onclick="downloadSelectedBatch()">
+            📥 下載已選集數 (<span id="drawer-selected-count">0</span>)
+          </button>
+        </div>
+      </div>
+      <div id="drawer-ep-grid" class="ep-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Video Preview Modal -->
+<div class="drawer-backdrop" id="video-preview-modal" style="z-index:9999;">
+  <div class="drawer-content" style="max-width:840px; border-radius:18px;">
+    <div class="drawer-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:1.3rem;">🎬</span>
+        <div>
+          <h2 id="video-preview-title" style="font-size:1.15rem; font-weight:700;">短劇影片即時預覽</h2>
+          <span id="video-preview-sub" style="font-size:0.8rem; color:var(--text-muted);">本機影片即時解碼串流</span>
+        </div>
+      </div>
+      <button class="btn-secondary btn-sm" onclick="closeVideoModal()">✕ 關閉</button>
+    </div>
+    <div class="drawer-body" style="padding:18px; display:flex; flex-direction:column; align-items:center; gap:12px; background:#000; border-radius:0 0 18px 18px;">
+      <video id="video-preview-player" controls autoplay style="width:100%; max-height:60vh; border-radius:10px; background:#000; outline:none; box-shadow:0 8px 30px rgba(0,0,0,0.6);"></video>
+      <div style="width:100%; display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted);">
+        <span id="video-preview-path" class="mono" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;"></span>
+        <button class="btn-secondary btn-sm" id="btn-copy-modal-path" onclick="copyCurrentVideoPath()" style="padding:4px 8px; font-size:0.75rem;">📋 複製路徑</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* ==============================================================
+   State Management & Zero-Allocation Caching
+   ============================================================== */
+let activeTab = 'catalog';
+let currentPlatform = 'tiktok';
+let catalogDramas = [];
+let catalogOffset = 0;
+const CATALOG_PAGE_SIZE = 12;
+let catalogHasMore = true;
+let isCatalogLoading = false;
+
+// Selection & Download Tracking State
+let downloadedMap = { completed_urls: [], downloaded_dramas: [], drama_episodes: {} };
+let hideDownloaded = false;
+let selectedDramas = new Map(); // key: targetUrl -> { url, title }
+
+let currentDrama = null;
+let selectedEpisodes = new Set();
+let pollInterval = null;
+
+// Play Mode State
+let drawerMode = 'download'; // 'download' | 'play'
+let nowPlayingEpNo = null;
+let hlsInstance = null;
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerText = msg;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3500);
+}
+
+async function api(path, opt = {}) {
+  const r = await fetch(path, opt);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.detail || JSON.stringify(j));
+  return j;
+}
+
+async function loadDownloadedMap() {
+  try {
+    const res = await api('/api/downloads/downloaded_map');
+    downloadedMap = res;
+    updateDownloadedStats();
+  } catch(e) {
+    console.error('Failed to load downloaded map', e);
+  }
+}
+
+function isDramaDownloaded(d) {
+  if (!d) return false;
+  const targetUrl = d.canonical_url || d.page_url || '';
+  if (downloadedMap.completed_urls && downloadedMap.completed_urls.includes(targetUrl)) return true;
+  if (d.title && downloadedMap.downloaded_dramas && downloadedMap.downloaded_dramas.includes(d.title)) return true;
+  if (d.title && downloadedMap.drama_episodes && downloadedMap.drama_episodes[d.title] && downloadedMap.drama_episodes[d.title].length > 0) return true;
+  return false;
+}
+
+/* Platform Switching (TikTok vs Flex TV vs DramaBox vs NetShort) */
+const ALL_PLATFORMS = ['tiktok', 'flextv', 'dramabox', 'netshort'];
+
+function switchPlatform(platform) {
+  currentPlatform = platform;
+
+  // Update sidebar active states
+  ALL_PLATFORMS.forEach(p => {
+    const nav = document.getElementById(`nav-platform-${p}`);
+    if (nav) nav.classList.toggle('active', platform === p);
+  });
+  const navDownloads = document.getElementById('nav-downloads');
+  const navSettings = document.getElementById('nav-settings');
+  if (navDownloads) navDownloads.classList.remove('active');
+  if (navSettings) navSettings.classList.remove('active');
+
+  // Activate catalog view
+  activeTab = 'catalog';
+  document.getElementById('view-catalog').classList.add('active');
+  document.getElementById('view-downloads').classList.remove('active');
+  document.getElementById('view-settings').classList.remove('active');
+
+  // Update titles & descriptions
+  const titleEl = document.getElementById('catalog-view-title');
+  const descEl = document.getElementById('catalog-view-desc');
+  if (platform === 'flextv') {
+    if (titleEl) titleEl.innerHTML = '<span>🎬</span> Flex TV 熱門全集短劇';
+    if (descEl) descEl.innerText = '精選 Flex TV 官方全集短劇（言情、懸疑、都市、奇幻、玄幻），向下滾動連續加載；點擊直接展開全集，支援 HLS 原畫高速下載。';
+  } else if (platform === 'dramabox') {
+    if (titleEl) titleEl.innerHTML = '<span>📦</span> DramaBox 熱門短劇';
+    if (descEl) descEl.innerText = '全球知名短劇龍頭（都市爽文、戰神逆襲、豪門虐戀），支援官方 1080p/720p 結構化正片高速下載與即時解析。';
+  } else if (platform === 'netshort') {
+    if (titleEl) titleEl.innerHTML = '<span>⚡</span> NetShort 精選短劇';
+    if (descEl) descEl.innerText = '精選 NetShort 華語爆款短劇，多集結構化目錄；點擊直接展開全集，支援直鏈自動嗅探與批次任務下載。';
+  } else {
+    if (titleEl) titleEl.innerHTML = '<span>🔥</span> TikTok 熱門短劇挑選';
+    if (descEl) descEl.innerText = '直接挑選 TikTok 官方同步短劇，向下滾動連續加載；亦支援輸入 URL 解析單劇。';
+  }
+
+  // Reload catalog
+  loadMoreCatalog(true);
+}
+
+/* Tab Navigation */
+function switchTab(tab) {
+  activeTab = tab;
+  ['downloads', 'settings'].forEach(t => {
+    const nav = document.getElementById(`nav-${t}`);
+    const view = document.getElementById(`view-${t}`);
+    if (t === tab) {
+      if (nav) nav.classList.add('active');
+      if (view) view.classList.add('active');
+    } else {
+      if (nav) nav.classList.remove('active');
+      if (view) view.classList.remove('active');
+    }
+  });
+
+  const viewCatalog = document.getElementById('view-catalog');
+  if (tab === 'catalog') {
+    if (viewCatalog) viewCatalog.classList.add('active');
+    ALL_PLATFORMS.forEach(p => {
+      const nav = document.getElementById(`nav-platform-${p}`);
+      if (nav) nav.classList.toggle('active', currentPlatform === p);
+    });
+  } else {
+    if (viewCatalog) viewCatalog.classList.remove('active');
+    ALL_PLATFORMS.forEach(p => {
+      const nav = document.getElementById(`nav-platform-${p}`);
+      if (nav) nav.classList.remove('active');
+    });
+  }
+
+  if (tab === 'downloads') {
+    loadTasks();
+  } else if (tab === 'settings') {
+    loadSettings();
+    loadAuthStatus();
+  }
+}
+
+/* ==============================================================
+   PAGE 1: CATALOG & INFINITE SCROLL
+   ============================================================== */
+async function loadMoreCatalog(refresh = false) {
+  if (refresh) {
+    isCatalogLoading = false;
+    catalogHasMore = true;
+    catalogOffset = 0;
+    catalogDramas = [];
+    const grid = document.getElementById('drama-catalog-grid');
+    if (grid) grid.innerHTML = '';
+    const search = document.getElementById('catalog-search');
+    if (search) search.value = '';
+  }
+  if (isCatalogLoading) return;
+  if (!catalogHasMore && !refresh) return;
+
+  isCatalogLoading = true;
+  const spinner = document.getElementById('infinite-spinner');
+  const scrollText = document.getElementById('infinite-scroll-text');
+  const loadMoreBtn = document.getElementById('btn-manual-load-more');
+  
+  if (spinner) spinner.style.display = 'block';
+  if (scrollText) scrollText.innerText = '正在加載短劇…';
+  if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+
+  try {
+    const targetOffset = refresh ? 0 : catalogOffset;
+    const endpoint = `/api/${currentPlatform}/catalog?offset=${targetOffset}&limit=${CATALOG_PAGE_SIZE}&refresh=${refresh}`;
+    const res = await api(endpoint);
+    
+    if (refresh) {
+      catalogDramas = [];
+      catalogOffset = 0;
+      document.getElementById('drama-catalog-grid').innerHTML = '';
+      document.getElementById('catalog-search').value = '';
+    }
+
+    const items = res.items || [];
+    catalogDramas.push(...items);
+    catalogOffset += items.length;
+    catalogHasMore = res.has_more ?? false;
+
+    renderCatalogGrid(items, refresh);
+    
+    const totalCount = res.total || catalogDramas.length;
+    document.getElementById('catalog-loaded-count').innerText = `${catalogDramas.length} / ${totalCount}`;
+
+    let platformName = 'TikTok';
+    if (currentPlatform === 'flextv') platformName = 'Flex TV';
+    else if (currentPlatform === 'dramabox') platformName = 'DramaBox';
+    else if (currentPlatform === 'netshort') platformName = 'NetShort';
+
+    if (!catalogHasMore) {
+      spinner.style.display = 'none';
+      scrollText.innerText = `🎉 已全部載入所有 ${catalogDramas.length} 部 ${platformName} 短劇`;
+      if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+    } else {
+      spinner.style.display = 'none';
+      scrollText.innerText = `向下滾動自動加載更多 (${catalogDramas.length}/${totalCount})`;
+      if (loadMoreBtn) loadMoreBtn.style.display = 'inline-flex';
+    }
+  } catch (err) {
+    spinner.style.display = 'none';
+    scrollText.innerText = `加載失敗: ${err.message}，請點擊重新整理`;
+    if (loadMoreBtn) loadMoreBtn.style.display = 'inline-flex';
+  } finally {
+    isCatalogLoading = false;
+  }
+}
+
+function refreshCatalog() {
+  loadMoreCatalog(true);
+}
+
+function updateDownloadedStats() {
+  const cards = document.querySelectorAll('.drama-card');
+  let downloadedCount = 0;
+  cards.forEach(c => {
+    if (c.classList.contains('is-downloaded')) downloadedCount++;
+  });
+  const infoEl = document.getElementById('catalog-downloaded-info');
+  const countEl = document.getElementById('catalog-downloaded-count');
+  if (infoEl && countEl) {
+    if (downloadedCount > 0) {
+      infoEl.style.display = 'inline';
+      countEl.innerText = downloadedCount;
+    } else {
+      infoEl.style.display = 'none';
+    }
+  }
+}
+
+function renderCatalogGrid(newItems, isReset = false) {
+  const grid = document.getElementById('drama-catalog-grid');
+  if (isReset) grid.innerHTML = '';
+
+  newItems.forEach(d => {
+    const card = document.createElement('div');
+    const targetUrl = d.canonical_url || d.page_url || d.detail_url || '';
+    const isDownloaded = isDramaDownloaded(d);
+    const isSelected = selectedDramas.has(targetUrl);
+
+    card.className = `drama-card ${isDownloaded ? 'is-downloaded' : ''} ${isSelected ? 'selected-card' : ''}`;
+    card.title = d.title;
+    card.setAttribute('data-url', targetUrl);
+    card.setAttribute('data-title', d.title);
+
+    if (hideDownloaded && isDownloaded) {
+      card.style.display = 'none';
+    }
+
+    card.onclick = (e) => {
+      if (e.target.closest('.drama-select-check')) return;
+      openDramaByUrl(targetUrl);
+    };
+
+    const cover = d.cover_url || 'https://via.placeholder.com/240x320/1e2530/ffffff?text=ShortDrama';
+    const isFlexTV = currentPlatform === 'flextv' || d.provider === 'flextv' || d.source === 'flextv';
+    const isDramaBox = currentPlatform === 'dramabox' || d.provider === 'dramabox';
+    const isNetShort = currentPlatform === 'netshort' || d.provider === 'netshort';
+
+    let platformLabel = 'TikTok';
+    let platformColor = 'var(--tiktok-red)';
+    let tag = (d.themes && d.themes.length > 0) ? d.themes[0] : '熱播';
+    let epBadge = `${d.num_videos || '?'} 集全`;
+    let metaLeft = `👀 ${d.watched_str || d.num_watched || 0} 次觀看`;
+    let tagBg = '';
+
+    if (isFlexTV) {
+      platformLabel = 'FlexTV';
+      platformColor = '#ec4899';
+      tag = d.category || '熱播';
+      epBadge = d.episodes_count ? `${d.episodes_count} 集` : 'HD 全集';
+      metaLeft = `🎬 ${d.category || '全集'}`;
+      tagBg = 'background:rgba(236,72,153,0.85);';
+    } else if (isDramaBox) {
+      platformLabel = 'DramaBox';
+      platformColor = '#fbbf24';
+      tag = (d.tags && d.tags.length > 0) ? d.tags[0] : '精選';
+      epBadge = d.episodes_count ? `${d.episodes_count} 集` : '1080p 全集';
+      metaLeft = `📦 ${d.tags && d.tags.length > 1 ? d.tags[1] : '爆款推薦'}`;
+      tagBg = 'background:rgba(245,158,11,0.85);';
+    } else if (isNetShort) {
+      platformLabel = 'NetShort';
+      platformColor = '#38bdf8';
+      tag = (d.tags && d.tags.length > 0) ? d.tags[0] : '華語';
+      epBadge = d.episodes_count ? `${d.episodes_count} 集` : '多集完整';
+      metaLeft = `⚡ NetShort 原創`;
+      tagBg = 'background:rgba(56,189,248,0.85);';
+    }
+
+    card.innerHTML = `
+      <div class="drama-select-check ${isSelected ? 'checked' : ''}" onclick="toggleSelectDrama(event, '${escapeHtml(targetUrl)}', '${escapeHtml(d.title)}')">
+        <input type="checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelectDrama(event, '${escapeHtml(targetUrl)}', '${escapeHtml(d.title)}')">
+      </div>
+      <div class="drama-thumb-wrap">
+        <img class="drama-thumb" src="${cover}" loading="lazy" referrerpolicy="no-referrer" alt="${escapeHtml(d.title)}">
+        <span class="drama-badge" style="${tagBg}">${escapeHtml(tag)}</span>
+        <span class="drama-ep-badge">${escapeHtml(epBadge)}</span>
+        ${isDownloaded ? '<span class="badge-downloaded">✅ 已下載</span>' : ''}
+      </div>
+      <div class="drama-body">
+        <div class="drama-card-title">${escapeHtml(d.title)}</div>
+        <div class="drama-card-meta">
+          <span>${escapeHtml(metaLeft)}</span>
+          <span style="color:${platformColor}; font-weight:700;">${escapeHtml(platformLabel)}</span>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  updateDownloadedStats();
+  filterCatalogCards();
+}
+
+function toggleSelectDrama(event, url, title) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  if (!url) return;
+
+  if (selectedDramas.has(url)) {
+    selectedDramas.delete(url);
+  } else {
+    selectedDramas.set(url, { url, title });
+  }
+
+  const cards = document.querySelectorAll('.drama-card');
+  cards.forEach(c => {
+    if (c.getAttribute('data-url') === url) {
+      const isSel = selectedDramas.has(url);
+      c.classList.toggle('selected-card', isSel);
+      const chkWrap = c.querySelector('.drama-select-check');
+      const input = c.querySelector('.drama-select-check input');
+      if (chkWrap) chkWrap.classList.toggle('checked', isSel);
+      if (input) input.checked = isSel;
+    }
+  });
+
+  updateBatchBar();
+}
+
+function toggleHideDownloaded() {
+  hideDownloaded = !hideDownloaded;
+  const btn = document.getElementById('btn-toggle-hide-downloaded');
+  const icon = document.getElementById('icon-hide-downloaded');
+  const lbl = document.getElementById('lbl-hide-downloaded');
+
+  if (hideDownloaded) {
+    if (btn) btn.style.borderColor = 'rgba(239, 68, 68, 0.6)';
+    if (btn) btn.style.background = 'rgba(239, 68, 68, 0.15)';
+    if (icon) icon.innerText = '👁️';
+    if (lbl) lbl.innerText = '顯示已下載';
+  } else {
+    if (btn) btn.style.borderColor = '';
+    if (btn) btn.style.background = '';
+    if (icon) icon.innerText = '🚫';
+    if (lbl) lbl.innerText = '隱藏已下載';
+  }
+
+  filterCatalogCards();
+}
+
+function toggleSelectAllLoadedDramas() {
+  const cards = document.querySelectorAll('.drama-card');
+  const visibleCards = Array.from(cards).filter(c => c.style.display !== 'none');
+  if (visibleCards.length === 0) return;
+
+  const allVisibleSelected = visibleCards.every(c => {
+    const u = c.getAttribute('data-url');
+    return selectedDramas.has(u);
+  });
+
+  visibleCards.forEach(c => {
+    const u = c.getAttribute('data-url');
+    const t = c.getAttribute('data-title');
+    if (!u) return;
+
+    if (allVisibleSelected) {
+      selectedDramas.delete(u);
+      c.classList.remove('selected-card');
+      const inp = c.querySelector('.drama-select-check input');
+      const chk = c.querySelector('.drama-select-check');
+      if (inp) inp.checked = false;
+      if (chk) chk.classList.remove('checked');
+    } else {
+      selectedDramas.set(u, { url: u, title: t });
+      c.classList.add('selected-card');
+      const inp = c.querySelector('.drama-select-check input');
+      const chk = c.querySelector('.drama-select-check');
+      if (inp) inp.checked = true;
+      if (chk) chk.classList.add('checked');
+    }
+  });
+
+  const selectAllLbl = document.getElementById('lbl-select-all');
+  if (selectAllLbl) {
+    selectAllLbl.innerText = allVisibleSelected ? '勾選全部' : '取消全選';
+  }
+
+  updateBatchBar();
+}
+
+function clearDramaSelection() {
+  selectedDramas.clear();
+  const cards = document.querySelectorAll('.drama-card');
+  cards.forEach(c => {
+    c.classList.remove('selected-card');
+    const inp = c.querySelector('.drama-select-check input');
+    const chk = c.querySelector('.drama-select-check');
+    if (inp) inp.checked = false;
+    if (chk) chk.classList.remove('checked');
+  });
+
+  const selectAllLbl = document.getElementById('lbl-select-all');
+  if (selectAllLbl) selectAllLbl.innerText = '勾選全部';
+
+  updateBatchBar();
+}
+
+function updateBatchBar() {
+  const bar = document.getElementById('floating-batch-bar');
+  const countEl = document.getElementById('batch-selected-count');
+  const previewEl = document.getElementById('batch-titles-preview');
+
+  if (!bar) return;
+
+  const count = selectedDramas.size;
+  if (count > 0) {
+    bar.classList.add('visible');
+    if (countEl) countEl.innerText = count;
+
+    if (previewEl) {
+      const titles = Array.from(selectedDramas.values()).map(d => d.title).filter(Boolean);
+      const top3 = titles.slice(0, 3).join(', ');
+      previewEl.innerText = count > 3 ? `(${top3} …等 ${count} 部)` : `(${top3})`;
+    }
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+async function submitBatchDramasDownload(onlyFirstEpisode = false) {
+  if (selectedDramas.size === 0) {
+    showToast('請先勾選至少一部短劇！');
+    return;
+  }
+
+  const items = Array.from(selectedDramas.values());
+  const quality = document.getElementById('batch-quality').value || 'best';
+  const skipDownloaded = document.getElementById('batch-skip-downloaded-cb').checked;
+
+  const promptMsg = onlyFirstEpisode
+    ? `準備將 ${items.length} 部短劇的「第 1 集試看」加入下載佇列，是否繼續？`
+    : `準備將 ${items.length} 部短劇的「全部集數」加入下載佇列（系統將依序自動解析並排程，啟用防限流延遲），是否繼續？`;
+
+  if (!confirm(promptMsg)) return;
+
+  showToast(`正在將 ${items.length} 部短劇排入批次下載佇列…`);
+
+  try {
+    const res = await api('/api/drama/batch_dramas_download', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        dramas: items,
+        quality: quality,
+        only_first_episode: onlyFirstEpisode,
+        skip_downloaded: skipDownloaded
+      })
+    });
+
+    showToast(`🎉 成功排程！已提交 ${res.drama_count} 部短劇，後台正套用隨機動態延遲排入隊列…`);
+    clearDramaSelection();
+    switchTab('downloads');
+  } catch(err) {
+    showToast(`批次加入隊列失敗: ${err.message}`);
+  }
+}
+
+function filterCatalogCards() {
+  const q = document.getElementById('catalog-search').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.drama-card');
+  cards.forEach(c => {
+    const title = (c.getAttribute('data-title') || c.getAttribute('title') || '').toLowerCase();
+    const isDownloaded = c.classList.contains('is-downloaded');
+    
+    const matchSearch = !q || title.includes(q);
+    const matchHide = !(hideDownloaded && isDownloaded);
+
+    if (matchSearch && matchHide) {
+      c.style.display = 'flex';
+    } else {
+      c.style.display = 'none';
+    }
+  });
+}
+
+// Setup Infinite Scroll Intersection Observer & Scroll Listener
+function setupInfiniteScrollObserver() {
+  const container = document.querySelector('main.main-viewport');
+  const sentinel = document.getElementById('infinite-scroll-sentinel');
+  
+  if (window.IntersectionObserver && container && sentinel) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && activeTab === 'catalog') {
+          loadMoreCatalog(false);
+        }
+      });
+    }, { root: container, rootMargin: '400px', threshold: 0.05 });
+
+    observer.observe(sentinel);
+  }
+
+  // 雙重防呆：監聽 main-viewport 滾動事件
+  if (container) {
+    let scrollThrottle = null;
+    container.addEventListener('scroll', () => {
+      if (activeTab !== 'catalog') return;
+      if (scrollThrottle) return;
+      scrollThrottle = setTimeout(() => {
+        scrollThrottle = null;
+        const distToBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+        if (distToBottom < 600 && !isCatalogLoading && catalogHasMore) {
+          loadMoreCatalog(false);
+        }
+      }, 150);
+    });
+  }
+}
+
+/* Quick URL Resolve */
+async function resolveQuickUrl() {
+  const input = document.getElementById('quick-url-input');
+  const url = input.value.trim();
+  if (!url) {
+    showToast('請輸入短劇網址');
+    return;
+  }
+  openDramaByUrl(url);
+}
+
+async function openDramaByUrl(url) {
+  showToast('正在向伺服器解析短劇資訊與集數…');
+  try {
+    const res = await api('/api/drama/info', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ url })
+    });
+    if (res.drama) {
+      showDramaDrawer(res.drama);
+    }
+  } catch(e) {
+    showToast(`解析失敗: ${e.message}`);
+  }
+}
+
+/* Episode Drawer Logic */
+function showDramaDrawer(drama) {
+  currentDrama = drama;
+  selectedEpisodes.clear();
+  nowPlayingEpNo = null;
+
+  document.getElementById('drawer-title').innerText = drama.title;
+  
+  const downloadedEps = (downloadedMap.drama_episodes && downloadedMap.drama_episodes[drama.title]) || [];
+  const dlCountStr = downloadedEps.length > 0 ? ` (已下載 ${downloadedEps.length} 集)` : '';
+  document.getElementById('drawer-subtitle').innerText = `總共 ${drama.episodes.length} 集 | ${drama.provider || '劇集'}${dlCountStr}`;
+  document.getElementById('drawer-selected-count').innerText = '0';
+
+  // Reset player UI
+  const playerWrap = document.getElementById('drawer-player-wrap');
+  playerWrap.classList.remove('visible');
+  document.getElementById('drawer-player-ep-label').innerText = '選擇集數開始播放';
+  stopInlinePlayer();
+
+  renderEpisodeGrid(drama, downloadedEps);
+  setDrawerMode(drawerMode); // Persist last mode
+  document.getElementById('episode-drawer').classList.add('active');
+}
+
+function renderEpisodeGrid(drama, downloadedEps) {
+  const grid = document.getElementById('drawer-ep-grid');
+  grid.innerHTML = '';
+  drama.episodes.forEach(ep => {
+    const isDl = downloadedEps.includes(ep.episode_no);
+    const btn = document.createElement('div');
+    btn.className = `ep-btn ${isDl ? 'is-downloaded' : ''}`;
+    btn.id = `drawer-ep-${ep.episode_no}`;
+    btn.innerHTML = `第 ${ep.episode_no} 集${ep.is_locked ? ' 🔒' : ''}${isDl ? ' ✅' : ''}`;
+    if (isDl) btn.title = '該集已在本地硬碟完成下載';
+    btn.onclick = () => onEpisodeClick(ep.episode_no);
+    grid.appendChild(btn);
+  });
+}
+
+function onEpisodeClick(no) {
+  if (drawerMode === 'play') {
+    playEpisodeInline(no);
+  } else {
+    toggleSelectEpisode(no);
+  }
+}
+
+function closeDrawer() {
+  stopInlinePlayer();
+  document.getElementById('episode-drawer').classList.remove('active');
+}
+
+function toggleSelectEpisode(no) {
+  const btn = document.getElementById(`drawer-ep-${no}`);
+  if (selectedEpisodes.has(no)) {
+    selectedEpisodes.delete(no);
+    btn.classList.remove('selected');
+  } else {
+    selectedEpisodes.add(no);
+    btn.classList.add('selected');
+  }
+  document.getElementById('drawer-selected-count').innerText = selectedEpisodes.size;
+}
+
+/* ==========  Play / Download Mode Toggle  ========== */
+function setDrawerMode(mode) {
+  drawerMode = mode;
+  const btnDl = document.getElementById('mode-btn-download');
+  const btnPlay = document.getElementById('mode-btn-play');
+  const toolbar = document.getElementById('drawer-download-toolbar');
+  const playerWrap = document.getElementById('drawer-player-wrap');
+
+  if (mode === 'play') {
+    btnDl.classList.remove('active');
+    btnPlay.classList.add('active');
+    toolbar.style.display = 'none';
+    // Show player area (even if no video yet)
+    playerWrap.classList.add('visible');
+    // Clear download selections visual
+    selectedEpisodes.clear();
+    document.querySelectorAll('.ep-btn.selected').forEach(b => b.classList.remove('selected'));
+    document.getElementById('drawer-selected-count').innerText = '0';
+  } else {
+    btnPlay.classList.remove('active');
+    btnDl.classList.add('active');
+    toolbar.style.display = 'flex';
+    playerWrap.classList.remove('visible');
+    stopInlinePlayer();
+    // Clear now-playing highlight
+    document.querySelectorAll('.ep-btn.now-playing').forEach(b => b.classList.remove('now-playing'));
+    nowPlayingEpNo = null;
+  }
+}
+
+/* ==========  Inline Streaming Player  ========== */
+function stopInlinePlayer() {
+  const video = document.getElementById('drawer-inline-player');
+  if (video) { video.pause(); video.removeAttribute('src'); video.load(); }
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+}
+
+async function playEpisodeInline(epNo) {
+  if (!currentDrama) return;
+  const drama = currentDrama;
+  const ep = drama.episodes.find(e => e.episode_no === epNo);
+  if (!ep) return;
+
+  // Update now-playing highlight
+  document.querySelectorAll('.ep-btn.now-playing').forEach(b => b.classList.remove('now-playing'));
+  const epBtn = document.getElementById(`drawer-ep-${epNo}`);
+  if (epBtn) epBtn.classList.add('now-playing');
+  nowPlayingEpNo = epNo;
+
+  // Update label & nav buttons
+  document.getElementById('drawer-player-ep-label').innerText = `正在播放：第 ${epNo} 集`;
+  updatePlayerNavButtons();
+
+  // Show player
+  const playerWrap = document.getElementById('drawer-player-wrap');
+  playerWrap.classList.add('visible');
+
+  const video = document.getElementById('drawer-inline-player');
+  stopInlinePlayer();
+
+  // Resolve stream URL via backend
+  // Build the best possible URL: per-episode page_url > video_url > m3u8_url > drama base URL
+  const pageUrl = ep.page_url || ep.video_url || ep.m3u8_url
+                || drama.canonical_url || drama.url || drama.page_url || '';
+  if (!pageUrl) {
+    showToast('此集缺少可解析的 URL，請切換至下載模式');
+    return;
+  }
+
+  showToast(`正在解析第 ${epNo} 集串流…（可能需要 10-30 秒）`);
+  if (epBtn) epBtn.style.opacity = '0.5';
+  try {
+    const res = await api('/api/drama/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: pageUrl, episode_no: epNo, title: drama.title })
+    });
+
+    if (!res.ok) { showToast('無法取得串流，請嘗試下載模式'); return; }
+
+    const streamUrl = res.url;
+    const kind = res.kind; // 'hls' | 'direct' | 'local'
+
+    if (kind === 'hls' && Hls.isSupported()) {
+      hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: false });
+      hlsInstance.loadSource(streamUrl);
+      hlsInstance.attachMedia(video);
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+      hlsInstance.on(Hls.Events.ERROR, (_, data) => {
+        if (data.fatal) showToast('HLS 串流載入失敗，嘗試切換下載模式後本地播放');
+      });
+    } else if (kind === 'hls' && video.canPlayType('application/vnd.apple.mpegurl')) {
+      // Safari native HLS
+      video.src = streamUrl;
+      video.load();
+      video.play().catch(() => {});
+    } else {
+      // Direct MP4 or local file
+      video.src = streamUrl;
+      video.load();
+      video.play().catch(() => {});
+    }
+
+    // Auto-play next episode
+    video.onended = () => playNextEp();
+
+    showToast(`▶ 第 ${epNo} 集開始播放`);
+  } catch (e) {
+    const msg = e.message || '';
+    if (msg.includes('無法即時取得')) {
+      showToast(`第 ${epNo} 集串流暫時無法解析，建議先下載後播放`);
+    } else {
+      showToast(`串流解析失敗: ${msg}`);
+    }
+  } finally {
+    if (epBtn) epBtn.style.opacity = '1';
+  }
+}
+
+function updatePlayerNavButtons() {
+  if (!currentDrama || nowPlayingEpNo === null) return;
+  const eps = currentDrama.episodes.map(e => e.episode_no).sort((a, b) => a - b);
+  const idx = eps.indexOf(nowPlayingEpNo);
+  document.getElementById('btn-prev-ep').disabled = idx <= 0;
+  document.getElementById('btn-next-ep').disabled = idx >= eps.length - 1;
+}
+
+function playPrevEp() {
+  if (!currentDrama || nowPlayingEpNo === null) return;
+  const eps = currentDrama.episodes.map(e => e.episode_no).sort((a, b) => a - b);
+  const idx = eps.indexOf(nowPlayingEpNo);
+  if (idx > 0) playEpisodeInline(eps[idx - 1]);
+}
+
+function playNextEp() {
+  if (!currentDrama || nowPlayingEpNo === null) return;
+  const eps = currentDrama.episodes.map(e => e.episode_no).sort((a, b) => a - b);
+  const idx = eps.indexOf(nowPlayingEpNo);
+  if (idx < eps.length - 1) playEpisodeInline(eps[idx + 1]);
+}
+
+function selectAllEpisodes(select) {
+  if (!currentDrama) return;
+  currentDrama.episodes.forEach(ep => {
+    const btn = document.getElementById(`drawer-ep-${ep.episode_no}`);
+    if (select) {
+      selectedEpisodes.add(ep.episode_no);
+      if (btn) btn.classList.add('selected');
+    } else {
+      selectedEpisodes.delete(ep.episode_no);
+      if (btn) btn.classList.remove('selected');
+    }
+  });
+  document.getElementById('drawer-selected-count').innerText = selectedEpisodes.size;
+}
+
+function selectUnlockedEpisodes() {
+  if (!currentDrama) return;
+  selectAllEpisodes(false);
+  currentDrama.episodes.forEach(ep => {
+    if (!ep.is_locked) {
+      selectedEpisodes.add(ep.episode_no);
+      const btn = document.getElementById(`drawer-ep-${ep.episode_no}`);
+      if (btn) btn.classList.add('selected');
+    }
+  });
+  document.getElementById('drawer-selected-count').innerText = selectedEpisodes.size;
+}
+
+function selectUndownloadedEpisodes() {
+  if (!currentDrama) return;
+  selectAllEpisodes(false);
+  const downloadedEps = (downloadedMap.drama_episodes && downloadedMap.drama_episodes[currentDrama.title]) || [];
+
+  let count = 0;
+  currentDrama.episodes.forEach(ep => {
+    const isDl = downloadedEps.includes(ep.episode_no);
+    if (!isDl && !ep.is_locked) {
+      selectedEpisodes.add(ep.episode_no);
+      const btn = document.getElementById(`drawer-ep-${ep.episode_no}`);
+      if (btn) btn.classList.add('selected');
+      count++;
+    }
+  });
+  document.getElementById('drawer-selected-count').innerText = selectedEpisodes.size;
+  showToast(`已為您勾選 ${count} 集尚未下載之集數！`);
+}
+
+function selectFirstN(n) {
+  if (!currentDrama) return;
+  selectAllEpisodes(false);
+  currentDrama.episodes.slice(0, n).forEach(ep => {
+    if (!ep.is_locked) {
+      selectedEpisodes.add(ep.episode_no);
+      const btn = document.getElementById(`drawer-ep-${ep.episode_no}`);
+      if (btn) btn.classList.add('selected');
+    }
+  });
+  document.getElementById('drawer-selected-count').innerText = selectedEpisodes.size;
+  showToast(`已勾選前 ${selectedEpisodes.size} 集！`);
+}
+
+function selectLastN(n) {
+  if (!currentDrama) return;
+  selectAllEpisodes(false);
+  const eps = currentDrama.episodes.slice(-n);
+  eps.forEach(ep => {
+    if (!ep.is_locked) {
+      selectedEpisodes.add(ep.episode_no);
+      const btn = document.getElementById(`drawer-ep-${ep.episode_no}`);
+      if (btn) btn.classList.add('selected');
+    }
+  });
+  document.getElementById('drawer-selected-count').innerText = selectedEpisodes.size;
+  showToast(`已勾選後 ${selectedEpisodes.size} 集！`);
+}
+
+function invertEpisodeSelection() {
+  if (!currentDrama) return;
+  currentDrama.episodes.forEach(ep => {
+    if (!ep.is_locked) {
+      const btn = document.getElementById(`drawer-ep-${ep.episode_no}`);
+      if (selectedEpisodes.has(ep.episode_no)) {
+        selectedEpisodes.delete(ep.episode_no);
+        if (btn) btn.classList.remove('selected');
+      } else {
+        selectedEpisodes.add(ep.episode_no);
+        if (btn) btn.classList.add('selected');
+      }
+    }
+  });
+  document.getElementById('drawer-selected-count').innerText = selectedEpisodes.size;
+  showToast(`已反轉勾選狀態（當前共 ${selectedEpisodes.size} 集）`);
+}
+
+async function downloadSelectedBatch() {
+  if (!currentDrama || selectedEpisodes.size === 0) {
+    showToast('請至少挑選 1 集進行下載');
+    return;
+  }
+  const qual = document.getElementById('drawer-quality').value;
+  const skipDownloaded = document.getElementById('drawer-skip-downloaded-cb').checked;
+  const eps = currentDrama.episodes.filter(e => selectedEpisodes.has(e.episode_no));
+
+  showToast(`正在將 ${eps.length} 集加入下載佇列…`);
+  try {
+    const res = await api('/api/drama/batch_download', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        title: currentDrama.title,
+        quality: qual,
+        episodes: eps,
+        skip_downloaded: skipDownloaded
+      })
+    });
+    showToast(`成功加入 ${res.count} 個下載任務！${skipDownloaded ? ' (已自動排除已下載集數)' : ''}`);
+    closeDrawer();
+    switchTab('downloads');
+  } catch(e) {
+    showToast(`加入隊列失敗: ${e.message}`);
+  }
+}
+
+/* ==============================================================
+   PAGE 2: DOWNLOAD QUEUE (下載隊列 - 清除/繼續重試)
+   ============================================================== */
+let lastLoadedTasks = [];
+let currentTaskFilter = 'all';
+let currentPreviewPath = '';
+
+function copyText(text, label) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(label || '已複製到剪貼簿！');
+    }).catch(() => {
+      fallbackCopy(text, label);
+    });
+  } else {
+    fallbackCopy(text, label);
+  }
+}
+
+function fallbackCopy(text, label) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast(label || '已複製到剪貼簿！');
+  } catch(e) {
+    showToast('複製失敗，請手動選取複製');
+  }
+  document.body.removeChild(ta);
+}
+
+function previewVideo(encodedPath, title) {
+  currentPreviewPath = decodeURIComponent(encodedPath);
+  const modal = document.getElementById('video-preview-modal');
+  const player = document.getElementById('video-preview-player');
+  document.getElementById('video-preview-title').innerText = title || '短劇影片預覽';
+  document.getElementById('video-preview-path').innerText = currentPreviewPath;
+  player.src = `/api/file?path=${encodeURIComponent(currentPreviewPath)}`;
+  player.load();
+  player.play().catch(() => {});
+  modal.classList.add('active');
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById('video-preview-modal');
+  const player = document.getElementById('video-preview-player');
+  if (player) {
+    player.pause();
+    player.src = '';
+  }
+  modal.classList.remove('active');
+}
+
+function copyCurrentVideoPath() {
+  if (currentPreviewPath) copyText(currentPreviewPath, '已複製影片路徑至剪貼簿！');
+}
+
+function filterTaskStatus(status) {
+  currentTaskFilter = status;
+  document.querySelectorAll('.filter-tab').forEach(btn => {
+    if (btn.getAttribute('data-filter') === status) btn.classList.add('active');
+    else btn.classList.remove('active');
+  });
+  if (lastLoadedTasks) renderTasks(lastLoadedTasks);
+}
+
+async function retryAllFailedTasks() {
+  if (!confirm('確定要一鍵重試所有失敗與中斷的任務嗎？')) return;
+  try {
+    const res = await api('/api/tasks/retry_all_failed', {method: 'POST'});
+    showToast(`已重啟 ${res.count} 個失敗任務！`);
+    loadTasks();
+  } catch(e) {
+    showToast(`操作失敗: ${e.message}`);
+  }
+}
+
+async function cancelAllTasks() {
+  if (!confirm('確定要取消所有正在進行中或排隊中的任務嗎？')) return;
+  try {
+    const res = await api('/api/tasks/cancel_all', {method: 'POST'});
+    showToast(`已取消 ${res.count} 個進行中/排隊中任務！`);
+    loadTasks();
+  } catch(e) {
+    showToast(`操作失敗: ${e.message}`);
+  }
+}
+
+async function loadTasks() {
+  try {
+    const tasks = await api('/api/tasks');
+    lastLoadedTasks = tasks;
+    renderTasks(tasks);
+  } catch(e) {
+    console.error('Failed to load tasks', e);
+  }
+}
+
+function renderTasks(tasks) {
+  const tbody = document.getElementById('task-tbody');
+  let running = 0, queued = 0, completed = 0, failed = 0;
+
+  tasks.forEach(t => {
+    if (t.status === 'running') running++;
+    else if (t.status === 'queued') queued++;
+    else if (t.status === 'completed') completed++;
+    else if (t.status === 'failed' || t.status === 'cancelled') failed++;
+  });
+
+  document.getElementById('stat-running').innerText = running;
+  document.getElementById('stat-queued').innerText = queued;
+  document.getElementById('stat-completed').innerText = completed;
+  document.getElementById('stat-failed').innerText = failed;
+
+  const tabAll = document.getElementById('tab-cnt-all');
+  if (tabAll) {
+    tabAll.innerText = tasks.length;
+    document.getElementById('tab-cnt-running').innerText = running;
+    document.getElementById('tab-cnt-queued').innerText = queued;
+    document.getElementById('tab-cnt-completed').innerText = completed;
+    document.getElementById('tab-cnt-failed').innerText = failed;
+  }
+  
+  const badge = document.getElementById('sidebar-queue-badge');
+  badge.innerText = running + queued;
+  if (running > 0) badge.classList.add('active-badge');
+  else badge.classList.remove('active-badge');
+
+  let filtered = tasks;
+  if (currentTaskFilter === 'running') filtered = tasks.filter(t => t.status === 'running');
+  else if (currentTaskFilter === 'queued') filtered = tasks.filter(t => t.status === 'queued');
+  else if (currentTaskFilter === 'completed') filtered = tasks.filter(t => t.status === 'completed');
+  else if (currentTaskFilter === 'failed') filtered = tasks.filter(t => t.status === 'failed' || t.status === 'cancelled');
+
+  if (!filtered || filtered.length === 0) {
+    const emptyMsg = currentTaskFilter === 'all' ? '目前尚無下載任務' : `目前無「${currentTaskFilter}」狀態之任務`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:32px;">${emptyMsg}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(t => {
+    let statusBadge = `<span class="badge-status badge-${t.status}">${t.status}</span>`;
+    let outText = t.error ? `<span style="color:#f87171;">${escapeHtml(t.error)}</span>` : `<span class="mono" style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(t.output || '-')}</span>`;
+
+    let actions = '';
+    if (t.status === 'running') {
+      actions = `<button class="btn-danger btn-sm" onclick="cancelTask(${t.id})">取消</button>`;
+    } else if (t.status === 'failed' || t.status === 'cancelled') {
+      const isCaptchaOrTikTok = (t.error && (t.error.includes('Captcha') || t.error.includes('驗證'))) || (t.url && t.url.includes('tiktok.com'));
+      actions = `
+        ${isCaptchaOrTikTok ? `<button class="btn-primary btn-sm" onclick="sniffRetryTask(${t.id})" title="彈出桌面視窗滑過拼圖並自動下載">🖥️ 視窗嗅探</button>` : ''}
+        <button class="btn-success btn-sm" onclick="retryTask(${t.id})" title="繼續重試此任務">繼續</button>
+        <button class="btn-secondary btn-sm" onclick="deleteTask(${t.id})" title="刪除任務紀錄">✕</button>
+      `;
+    } else if (t.status === 'completed') {
+      const hasOutput = Boolean(t.output && t.output.length > 2);
+      actions = `
+        ${hasOutput ? `<button class="btn-primary btn-sm" onclick="previewVideo('${encodeURIComponent(t.output)}', '${escapeHtml(t.title)} - 第 ${t.episode} 集')" title="在瀏覽器中即時預覽播放">▶️ 播放</button>` : ''}
+        ${hasOutput ? `<button class="btn-secondary btn-sm" onclick="copyText('${escapeHtml(t.output)}', '已複製影片路徑至剪貼簿！')" title="複製本機檔案完整路徑">📋 路徑</button>` : ''}
+        <button class="btn-secondary btn-sm" onclick="deleteTask(${t.id})" title="清除此下載紀錄 (保留實體檔案)">清除</button>
+      `;
+    } else {
+      actions = `<button class="btn-secondary btn-sm" onclick="cancelTask(${t.id})">取消</button>`;
+    }
+
+    return `
+      <tr>
+        <td class="mono" style="color:var(--text-subtle);">#${t.id}</td>
+        <td><strong>${escapeHtml(t.title)}</strong></td>
+        <td>第 ${t.episode} 集</td>
+        <td><span class="mono" style="font-size:0.78rem;">${escapeHtml(t.quality)}</span></td>
+        <td>${statusBadge}</td>
+        <td>
+          <div style="font-size:0.75rem; display:flex; justify-content:space-between; margin-bottom:2px;">
+            <span>${t.progress ? t.progress.toFixed(1) : 0}%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: ${t.progress || 0}%;"></div>
+          </div>
+        </td>
+        <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(t.output || t.error || '')}">${outText}</td>
+        <td style="text-align:right; white-space:nowrap;">${actions}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function cancelTask(id) {
+  try {
+    await api(`/api/tasks/${id}/cancel`, {method: 'POST'});
+    showToast(`任務 #${id} 已取消`);
+    loadTasks();
+  } catch(e) {
+    showToast(`操作失敗: ${e.message}`);
+  }
+}
+
+async function retryTask(id) {
+  try {
+    await api(`/api/tasks/${id}/retry`, {method: 'POST'});
+    showToast(`任務 #${id} 已重設並繼續執行！`);
+    loadTasks();
+  } catch(e) {
+    showToast(`重試失敗: ${e.message}`);
+  }
+}
+
+async function sniffRetryTask(id) {
+  showToast(`桌面視窗即將彈出！請在視窗內滑過拼圖驗證，完成後系統將自動關閉視窗並開始下載正片…`);
+  try {
+    await api(`/api/tasks/${id}/sniff_retry`, {method: 'POST'});
+    showToast(`任務 #${id} 桌面嗅探進行中…`);
+    loadTasks();
+  } catch(e) {
+    showToast(`啟動失敗: ${e.message}`);
+  }
+}
+
+async function deleteTask(id) {
+  try {
+    await api(`/api/tasks/${id}`, {method: 'DELETE'});
+    showToast(`任務 #${id} 紀錄已清除`);
+    loadTasks();
+  } catch(e) {
+    showToast(`刪除失敗: ${e.message}`);
+  }
+}
+
+async function clearCompletedTasks() {
+  if (!confirm('確定要清除所有「已完成」的下載紀錄嗎？\n（磁碟上的 MP4 影片將完整保留，不受影響）')) return;
+  try {
+    await api('/api/tasks/clear_completed', {method: 'POST'});
+    showToast('已完成的下載記錄已清除！');
+    loadTasks();
+  } catch(e) {
+    showToast(`清除失敗: ${e.message}`);
+  }
+}
+
+async function clearAllTasks() {
+  if (!confirm('確定要清空所有任務紀錄嗎？')) return;
+  try {
+    await api('/api/tasks/clear_all', {method: 'POST'});
+    showToast('所有隊列任務已清除！');
+    loadTasks();
+  } catch(e) {
+    showToast(`清空失敗: ${e.message}`);
+  }
+}
+
+async function addDirect() {
+  const url = document.getElementById('direct-url').value.trim();
+  const title = document.getElementById('direct-title').value.trim() || 'ShortDrama';
+  const ep = parseInt(document.getElementById('direct-ep').value) || 1;
+  const qual = document.getElementById('direct-quality').value;
+  if (!url) {
+    showToast('請輸入影片網址或直鏈');
+    return;
+  }
+  showToast('正在新增任務…');
+  try {
+    await api('/api/download', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ url, title, episode: ep, quality: qual })
+    });
+    showToast('任務已成功加入隊列！');
+    loadTasks();
+  } catch(e) {
+    showToast(`失敗: ${e.message}`);
+  }
+}
+
+async function detectUrl() {
+  const url = document.getElementById('direct-url').value.trim();
+  const box = document.getElementById('detect-candidates');
+  if (!url) {
+    showToast('請先輸入網址以供探測');
+    return;
+  }
+  box.innerHTML = '<span style="color:var(--tiktok-cyan); font-size:0.85rem;">Playwright 正在無頭瀏覽並嗅探媒體串流中…</span>';
+  try {
+    const res = await api('/api/detect', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ url })
+    });
+    if (!res.candidates || res.candidates.length === 0) {
+      box.innerHTML = '<span style="color:#f87171; font-size:0.85rem;">未探測到可用的媒體直鏈</span>';
+      return;
+    }
+    box.innerHTML = res.candidates.map(c => `
+      <div style="background:rgba(255,255,255,0.03); padding:8px 12px; border-radius:8px; border:1px solid var(--border); font-size:0.8rem; display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+        <span class="mono" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;">${escapeHtml(c.url)}</span>
+        <button class="btn-primary btn-sm" onclick="useDetectedUrl('${escapeHtml(c.url)}')">選用此直鏈</button>
+      </div>
+    `).join('');
+  } catch(e) {
+    box.innerHTML = `<span style="color:#f87171; font-size:0.85rem;">探測失敗: ${e.message}</span>`;
+  }
+}
+
+function useDetectedUrl(u) {
+  document.getElementById('direct-url').value = u;
+  showToast('已套用探測到的媒體直鏈！');
+}
+
+/* ==============================================================
+   PAGE 3: SETTINGS & AUTH (路徑持久化/網站預先登錄資料)
+   ============================================================== */
+async function loadSettings() {
+  try {
+    const s = await api('/api/settings');
+    document.getElementById('setting-download-dir').value = s.download_dir || '';
+    const badge = document.getElementById('path-status-badge');
+    if (s.download_dir_exists) {
+      badge.className = 'auth-badge ok';
+      badge.innerText = '目錄正常';
+    } else {
+      badge.className = 'auth-badge empty';
+      badge.innerText = '目錄不存在 (儲存時將自動建立)';
+    }
+
+    if (s.crawler_delay_min !== undefined) {
+      document.getElementById('setting-delay-min').value = s.crawler_delay_min;
+    }
+    if (s.crawler_delay_max !== undefined) {
+      document.getElementById('setting-delay-max').value = s.crawler_delay_max;
+    }
+    if (s.concurrency !== undefined) {
+      const cInput = document.getElementById('setting-concurrency');
+      if (cInput) cInput.value = s.concurrency;
+    }
+  } catch(e) {
+    console.error('Failed to load settings', e);
+  }
+}
+
+async function saveConcurrency() {
+  const cVal = parseInt(document.getElementById('setting-concurrency').value);
+  if (isNaN(cVal) || cVal < 1 || cVal > 10) {
+    showToast('請輸入 1 ~ 10 之間的並發線程數');
+    return;
+  }
+  try {
+    const res = await api('/api/settings', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ concurrency: cVal })
+    });
+    showToast(`並發線程數已更新為 ${res.concurrency} 並即時生效！`);
+    loadSettings();
+  } catch(e) {
+    showToast(`儲存並發失敗: ${e.message}`);
+  }
+}
+
+async function saveCrawlerDelay() {
+  const minVal = parseFloat(document.getElementById('setting-delay-min').value);
+  const maxVal = parseFloat(document.getElementById('setting-delay-max').value);
+  if (isNaN(minVal) || isNaN(maxVal) || minVal < 0 || maxVal < minVal) {
+    showToast('請輸入合理的延遲範圍（最小延遲須大於等於 0 且不大於最大延遲）');
+    return;
+  }
+  try {
+    const res = await api('/api/settings', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        crawler_delay_min: minVal,
+        crawler_delay_max: maxVal
+      })
+    });
+    showToast(`動態延遲已更新為 ${res.crawler_delay_min}s ~ ${res.crawler_delay_max}s 並持久化保存！`);
+    loadSettings();
+  } catch(e) {
+    showToast(`儲存延遲失敗: ${e.message}`);
+  }
+}
+
+async function saveDownloadPath() {
+  const dir = document.getElementById('setting-download-dir').value.trim();
+  if (!dir) {
+    showToast('請輸入下載路徑');
+    return;
+  }
+  try {
+    const res = await api('/api/settings', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ download_dir: dir })
+    });
+    showToast(`下載路徑已持久化保存：${res.download_dir}`);
+    loadSettings();
+  } catch(e) {
+    showToast(`儲存失敗: ${e.message}`);
+  }
+}
+
+async function loadAuthStatus() {
+  try {
+    const st = await api('/api/auth/status');
+    // NetShort
+    const ns = st.netshort || {};
+    const nsBadge = document.getElementById('netshort-auth-badge');
+    const nsInfo = document.getElementById('netshort-auth-info');
+    if (ns.configured) {
+      nsBadge.className = 'auth-badge ok';
+      nsBadge.innerText = '已配置登錄';
+      nsInfo.innerHTML = `檔案大小: <span class="mono">${ns.size} bytes</span> | 更新時間: <span class="mono">${ns.updated_at}</span>`;
+    } else {
+      nsBadge.className = 'auth-badge empty';
+      nsBadge.innerText = '未配置';
+      nsInfo.innerText = '尚未保存 NetShort 登錄資料。';
+    }
+
+    // TikTok
+    const tt = st.tiktok || {};
+    const ttBadge = document.getElementById('tiktok-auth-badge');
+    const ttInfo = document.getElementById('tiktok-auth-info');
+    if (tt.configured) {
+      ttBadge.className = 'auth-badge ok';
+      ttBadge.innerText = '已配置登錄';
+      ttInfo.innerHTML = `檔案大小: <span class="mono">${tt.size} bytes</span> | 更新時間: <span class="mono">${tt.updated_at}</span>`;
+    } else {
+      ttBadge.className = 'auth-badge empty';
+      ttBadge.innerText = '未配置';
+      ttInfo.innerText = '尚未保存 TikTok 登錄資料。';
+    }
+  } catch(e) {
+    console.error('Failed to load auth status', e);
+  }
+}
+
+async function saveAuth(provider) {
+  const textarea = document.getElementById(`${provider}-auth-text`);
+  const data = textarea.value.trim();
+  if (!data) {
+    showToast('請先貼上憑證資料');
+    return;
+  }
+  try {
+    const res = await api('/api/auth/save', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ provider, auth_data: data })
+    });
+    showToast(res.message);
+    textarea.value = '';
+    loadAuthStatus();
+  } catch(e) {
+    showToast(`保存失敗: ${e.message}`);
+  }
+}
+
+async function clearAuth(provider) {
+  if (!confirm(`確定要清除 ${provider.toUpperCase()} 的預先登錄資料嗎？`)) return;
+  try {
+    const res = await api('/api/auth/clear', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ provider })
+    });
+    showToast(res.message);
+    loadAuthStatus();
+  } catch(e) {
+    showToast(`清除失敗: ${e.message}`);
+  }
+}
+
+async function launchTikTokBrowserLogin() {
+  const btn = document.getElementById('btn-browser-login');
+  btn.disabled = true;
+  btn.innerText = '桌面瀏覽器已啟動，請登入…';
+  showToast('桌面視窗已開啟！請在該視窗完成登入或滑過拼圖驗證…');
+  try {
+    const res = await api('/api/auth/tiktok/browser_login', {method: 'POST'});
+    showToast(res.message);
+    loadAuthStatus();
+  } catch(e) {
+    showToast(`操作失敗: ${e.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.innerText = '🚀 彈出視窗一鍵登入 / 通過驗證';
+  }
+}
+
+/* System Health Check */
+async function checkHealth() {
+  try {
+    const res = await api('/api/health');
+    const dot = document.getElementById('health-dot');
+    const text = document.getElementById('health-text');
+    const ff = document.getElementById('ffmpeg-status');
+    const envFf = document.getElementById('env-ffmpeg');
+    if (res.ok) {
+      dot.className = 'dot online';
+      text.innerText = '系統在線';
+      ff.innerText = res.ffmpeg ? 'FFmpeg: OK' : 'FFmpeg: 缺少';
+      if (envFf) {
+        envFf.innerText = res.ffmpeg ? '可用 (OK)' : '未安裝';
+        envFf.style.color = res.ffmpeg ? '#34d399' : '#f87171';
+      }
+    }
+  } catch(e) {
+    document.getElementById('health-dot').className = 'dot offline';
+    document.getElementById('health-text').innerText = '伺服器中斷';
+  }
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* Init */
+window.addEventListener('DOMContentLoaded', () => {
+  checkHealth();
+  setupInfiniteScrollObserver();
+  loadDownloadedMap().then(() => {
+    loadMoreCatalog(false);
+  });
+  loadTasks();
+  loadSettings();
+  loadAuthStatus();
+
+  // Poll tasks every 2s
+  setInterval(() => {
+    if (activeTab === 'downloads') {
+      loadTasks();
+    } else {
+      // Background lightweight badge update
+      api('/api/tasks').then(tasks => {
+        let running = 0, queued = 0;
+        tasks.forEach(t => {
+          if (t.status === 'running') running++;
+          else if (t.status === 'queued') queued++;
+        });
+        const badge = document.getElementById('sidebar-queue-badge');
+        badge.innerText = running + queued;
+        if (running > 0) badge.classList.add('active-badge');
+        else badge.classList.remove('active-badge');
+      }).catch(() => {});
+    }
+  }, 2000);
+});
+</script>
+</body>
+</html>
